@@ -7,15 +7,12 @@ dist/
 __pycache__/
 *.so
 *~
-.vscode/*
-build
-dist
-pyhiveapi.egg-info
+.vscode/
 
 # due to using tox and pytest
-.tox
-.cache
-test*
+.tox/
+.cache/
+.pytest_cache/
 
 # virtual environment folder
 .venv/

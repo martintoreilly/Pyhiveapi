@@ -16,3 +16,6 @@ __pycache__/
 
 # virtual environment folder
 .venv/
+
+# local secrets such as Hive login credentials
+secrets/

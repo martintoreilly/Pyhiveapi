@@ -42,6 +42,136 @@ This additional "build" step means you cannot just install the package using `pi
 
 Instead you must re-install the package **every time you want to test a change** by running `pip install .[dev]` from the root directory of the project (using `.[dev]` rather than just `.` will install the additional dependencies required to run the project tests).
 
+## Generating test data
+
+### Generating realistic fake test data
+Some of the fields require data of a certain format.
+While it may not be necessary for this data to be in the required format for test purposes, we recommend using fake but correctly formatted test data where possible.
+We don't want to use real data as our test data is public on the internet and we don't want to make email addresses, phone numbers or postal addresses of real people public.
+
+We've used the following approaches to create realistic but non-identifying fake data.
+
+#### ID fields
+ID fields in the Hive beekeeper API responses are "version 4" random UUIDs. We generate fake "version 4" UUIDs using an [online generator](https://createuuid.com/v4/), but keep ensure that we reflect valid relationships between entries by ensuring consistent values of fields that reference other devices by ID (e.g. `parent`, `consumer` fields etc).
+
+#### Person names
+We use the following format for generating names for users, with `<user_number>` replaced with the user number (e.g. `1 User Street` for user 1, `999 User Street` for user 999).
+
+```json
+"firstName": "Test",
+"lastName": "User<user_number>",
+```
+
+#### Email addresses
+IANA maintain a list of [reserved domain names](https://www.iana.org/domains/reserved), including `example.com`.
+You can safely use `<any-string>@example.com` as an email address and be confident it will never be a real email address.
+We use email addresses of the format `test.user<user_number>@example.com`.
+
+#### Phone numbers
+Ofcom maintain a list of [reserved UK telephone number ranges](https://www.ofcom.org.uk/phones-telecoms-and-internet/information-for-industry/numbering/numbers-for-drama) for use in TV and radio drama programmes that "will not be allocated to communications providers in the foreseeable future".
+There 1,000 reserved numbers for each of a range of UK regions and key non-geographic number types (e.g. mobile, freephone, UK-wide, premium rate).
+
+We use the London range in international format for the `phone` field (`+442079460XXX`), replacing `XXX` with the zero-padded number of the test user (e.g. `+442079460001` for user 1 and ``+442079460999` for user 999).
+
+We use the mobile range in international format for the `mobile` field (`+447700900XXX`), again replacing `XXX` with the zero-padded number of the test user.
+
+#### Addresses
+We are not aware of UK address data reserved for test or example purposes.
+For the purposes of test data for this project, we will create addresses with a fake street address line of the format `<user_number> User Street` but using the data for for [Buckingham Palace, London](https://checkmypostcode.uk/sw1a1aa) for the remaining fields (Buckingham Palance is the London residence of the queen of the United Kingdom).
+
+### Example fake data
+Altogether this results in fake data of the following format, with `<user_number>` replaced with the user number wherever it appears.
+
+#### User data
+```json
+"user": {
+  "id": "e6b07a3d-0afe-488c-a345-d9d03006fac1",
+  "username": "test.user<user_id>@example.com",
+  "firstName": "Test",
+  "lastName": "User<user_number>",
+  "address": "<user_number> User Street",
+  "city": "London",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "postcode": "SW1A 1AA",
+  "longitude": -0.1416,
+  "latitude": 51.501,
+  "email": "test.user<user_id>@example.com",
+  "mobile": "++442079460001",
+  "phone": "+447700900001",
+  "timezone": "Europe/London",
+  "locale": "en-GB",
+  "temperatureUnit": "C"
+}
+```
+
+#### Home data
+
+```json
+"homes": [
+  {
+      "id": "6b0a21c2-2eb2-43af-a546-d119b679441a",
+      "name": "Home",
+      "address": "<user_number> User Street",
+      "location": {
+          "country": "GB",
+          "state": null,
+          "timeZone": "Europe/London",
+          "latitude": 51.501,
+          "longitude": -0.1416,
+          "addressFirstLine": "<user_number> User Street",
+          "addressSecondLine": null,
+          "city": "London",
+          "postcode": "SW1A 1AA"
+      },
+      "primary": true,
+      "userType": "OWNER",
+      "homeUsers": {
+          "SUPERUSER": [
+              "edbab90bb-e78e-44ad-835d-b61bcad84dff"
+          ],
+          "OWNER": [
+              "e6b07a3d-0afe-488c-a345-d9d03006fac1"
+          ]
+      },
+      "users": [
+          "edbab90bb-e78e-44ad-835d-b61bcad84dff"
+      ],
+      "owners": [
+          "e6b07a3d-0afe-488c-a345-d9d03006fac1"
+      ],
+      "homeTypes": [
+          "HIVE"
+      ],
+      "invitations": [
+          {
+              "invitationId": "072a0b52-04c8-4e8d-8edc-9350106a4bec",
+              "recipient": "Test Guest 1",
+              "accepted": true,
+              "expired": false,
+              "revoked": false,
+              "homeId": "6b0a21c2-2eb2-43af-a546-d119b679441a",
+              "userType": "SECONDARY_USER",
+              "invitedBy": "user:e6b07a3d-0afe-488c-a345-d9d03006fac1"
+          }
+      ],
+      "homePicture": null,
+      "shareOption": "FLEXIBLE",
+      "pets": null,
+      "notificationChannels": [
+          "PUSH"
+      ],
+      "pinId": null,
+      "userNicknames": {
+          "edbab90bb-e78e-44ad-835d-b61bcad84dff": "Test Guest 1"
+      },
+      "proResponseProviders": [],
+      "homePhase": "Live",
+      "owner": true
+  }
+]
+```
+
 ## Experimenting with the Hive beekeeper API
 The Hive beekeeper API is not publicly documented and this library has been created by reverse engineering the API endpoints by querying them using tools such as [Postman](https://www.postman.com/downloads/).
 

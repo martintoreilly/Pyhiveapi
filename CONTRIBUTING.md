@@ -79,6 +79,9 @@ We use the mobile range in international format for the `mobile` field (`+447700
 We are not aware of UK address data reserved for test or example purposes.
 For the purposes of test data for this project, we will create addresses with a fake street address line of the format `<user_number> User Street` but using the data for for [Buckingham Palace, London](https://checkmypostcode.uk/sw1a1aa) for the remaining fields (Buckingham Palance is the London residence of the queen of the United Kingdom).
 
+#### Schedule data
+Using real schedule data from individual's own homes can provide information about when someone tends to be at home.
+
 ### Example fake data
 Altogether this results in fake data of the following format, with `<user_number>` replaced with the user number wherever it appears.
 
